@@ -1,0 +1,11 @@
+[project]
+name = "bhsn"
+version = "0.1.0"
+description = "Data pipeline and API server for law information management."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi[standard]==0.120.0",
+    "sqlalchemy==1.4.52",
+    "mysql-connector-python==8.3.0",
+]
