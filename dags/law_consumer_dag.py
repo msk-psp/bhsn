@@ -1,14 +1,14 @@
 import json
 from pendulum import datetime
-from airflow.models.dag import DAG
-from airflow.datasets import Dataset
+# from airflow.models.dag import DAG
+from airflow.sdk import DAG, Asset
 from airflow.providers.mysql.hooks.mysql import MySqlHook
 from airflow.providers.apache.kafka.operators.consume import ConsumeFromTopicOperator
 
 # Define Datasets (Assets)
 kafka_topic_laws = "laws_topic"
-laws_kafka_dataset = Dataset(uri=f"kafka://{kafka_topic_laws}")
-mysql_law_table_dataset = Dataset(uri="mysql://bhsn_db/law")
+laws_kafka_dataset = Asset(uri=f"kafka://{kafka_topic_laws}")
+mysql_law_table_dataset = Asset(uri="mysql://host.docker.internal:3306/airflow/law")
 
 def save_laws_to_mysql(messages):
     """

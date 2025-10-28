@@ -1,8 +1,8 @@
 import json
 from pendulum import datetime
-from airflow.models.dag import DAG
-from airflow.datasets import Dataset
-from airflow.providers.http.operators.http import SimpleHttpOperator
+# from airflow.models.dag import DAG
+from airflow.sdk import DAG, Asset
+from airflow.providers.http.operators.http import HttpOperator
 from airflow.providers.apache.kafka.operators.produce import ProduceToTopicOperator
 
 # Define Datasets (Assets)
@@ -10,8 +10,8 @@ fastapi_laws_url = "http://fastapi-app:8000/laws"
 kafka_topic_laws = "laws_topic"
 
 # The Dataset URI should be unique and descriptive
-laws_api_dataset = Dataset(uri=fastapi_laws_url)
-laws_kafka_dataset = Dataset(uri=f"kafka://{kafka_topic_laws}")
+laws_api_dataset = Asset(uri=fastapi_laws_url)
+laws_kafka_dataset = Asset(uri=f"kafka://{kafka_topic_laws}")
 
 with DAG(
     dag_id="law_api_to_kafka_producer",
@@ -25,13 +25,14 @@ with DAG(
     """,
 ) as dag:
     # Task to get the list of laws from the FastAPI app
-    get_laws_task = SimpleHttpOperator(
+    get_laws_task = HttpOperator(
         task_id="get_laws_from_api",
         http_conn_id="fastapi_service", # Needs to be configured in Airflow UI
         method="GET",
         endpoint="/laws",
         response_filter=lambda response: response.json(),
-        outlets=[laws_api_dataset],
+        headers={"Content-Type": "application/json"},
+        # outlets=[laws_api_dataset],
     )
 
     # Task to produce the received list of laws to a Kafka topic

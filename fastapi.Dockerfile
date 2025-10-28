@@ -5,6 +5,8 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 # Set the working directory in the container
 COPY ./src /app/src
+COPY mock_law_detail_001322_02889.json /app
+COPY mock_law_list.json /app
 COPY pyproject.toml /app
 COPY uv.lock /app
 WORKDIR /app
